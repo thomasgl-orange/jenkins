@@ -14,6 +14,7 @@ import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import java.io.IOException;
+import java.security.AlgorithmParameterGenerator;
 import javax.inject.Inject;
 import static org.junit.Assert.*;
 import org.junit.Rule;
@@ -41,7 +42,10 @@ public class Jenkins19124Test {
         JenkinsRule.WebClient wc = j.createWebClient();
         HtmlPage c = wc.getPage(p, "configure");
         HtmlTextInput alpha = c.getElementByName("_.alpha");
+        // the fireEvent is required as setValueAttribute's new behavior is not triggering the onChange event anymore
         alpha.setValueAttribute("hello");
+        alpha.fireEvent("change");
+
         WebClientUtil.waitForJSExec(wc);
         assertEquals("hello", d.alpha);
         assertEquals("2", d.bravo);
