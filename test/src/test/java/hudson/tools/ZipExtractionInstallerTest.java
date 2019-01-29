@@ -90,8 +90,8 @@ public class ZipExtractionInstallerTest {
         adminWc.login(ADMIN);
         assertEquals(200, adminWc.getPage(request).getWebResponse().getStatusCode());
         
-        JenkinsRule.WebClient userWc = j.createWebClient();
-        userWc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        JenkinsRule.WebClient userWc = j.createWebClient()
+                .withThrowExceptionOnFailingStatusCode(false);
         userWc.login(USER);
         assertEquals(403, userWc.getPage(request).getWebResponse().getStatusCode());
     }

@@ -30,6 +30,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.*;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.xml.XmlPage;
 
@@ -79,18 +80,15 @@ public class ComputerTest {
         Node nodeA = j.createSlave("nodeA", null, null);
         Node nodeB = j.createSlave("nodeB", null, null);
 
-        WebClient wc = j.createWebClient();
+        WebClient wc = j.createWebClient()
+                .withThrowExceptionOnFailingStatusCode(false);
         HtmlForm form = wc.getPage(nodeB, "configure").getFormByName("config");
         form.getInputByName("_.name").setValueAttribute("nodeA");
 
-        try {
-            j.submit(form);
-            fail(NOTE);
-        } catch (FailingHttpStatusCodeException e) {
-            assertThat(NOTE, e.getStatusCode(), equalTo(400));
-            assertThat(NOTE, e.getResponse().getContentAsString(),
-                    containsString("Agent called ‘nodeA’ already exists"));
-        }
+        Page page = j.submit(form);
+        assertThat(NOTE, page.getWebResponse().getStatusCode(), equalTo(400));
+        assertThat(NOTE, page.getWebResponse().getContentAsString(), 
+                containsString("Agent called ‘nodeA’ already exists"));
     }
 
     @Test

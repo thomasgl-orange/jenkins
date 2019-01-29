@@ -139,12 +139,12 @@ public class ApiTokenPropertyTest {
         final ApiTokenProperty.DescriptorImpl descriptor = (ApiTokenProperty.DescriptorImpl) t.getDescriptor();
         
         // Make sure that Admin can reset a token of another user
-        WebClient wc = createClientForUser("bar");
-        wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        WebClient wc = createClientForUser("bar")
+                .withThrowExceptionOnFailingStatusCode(false);
         HtmlPage requirePOST = wc.goTo(foo.getUrl() + "/" + descriptor.getDescriptorUrl()+ "/changeToken");
         assertEquals("method should not be allowed", 405, requirePOST.getWebResponse().getStatusCode());
 
-        wc.getOptions().setThrowExceptionOnFailingStatusCode(true);
+        wc.setThrowExceptionOnFailingStatusCode(true);
         WebRequest request = new WebRequest(new URL(j.getURL().toString() + foo.getUrl() + "/" + descriptor.getDescriptorUrl()+ "/changeToken"), HttpMethod.POST);
         HtmlPage res = wc.getPage(request);
 

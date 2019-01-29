@@ -234,9 +234,10 @@ public class CLITest {
         sshd.start();
 
         // Sanity check
-        JenkinsRule.WebClient wc = r.createWebClient();
-        wc.getOptions().setRedirectEnabled(false);
-        wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        JenkinsRule.WebClient wc = r.createWebClient()
+                .withRedirectEnabled(false)
+                .withThrowExceptionOnFailingStatusCode(false);
+        
         WebResponse rsp = wc.goTo("cli-proxy/").getWebResponse();
         assertEquals(rsp.getContentAsString(), 302, rsp.getStatusCode());
         assertEquals(rsp.getContentAsString(), null, rsp.getResponseHeaderValue("X-Jenkins"));

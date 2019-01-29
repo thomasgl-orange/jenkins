@@ -24,10 +24,11 @@
 
 package hudson.model;
 
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+
 import static org.junit.Assert.*;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
@@ -41,16 +42,10 @@ public class AsynchPeopleTest {
 
     @Issue("JENKINS-18641")
     @Test public void display() throws Exception {
-        User.get("bob");
+        User.getById(  "bob", true);
         JenkinsRule.WebClient wc = j.createWebClient();
-        HtmlPage page;
-        try {
-            page = wc.goTo("asynchPeople");
-        } catch (FailingHttpStatusCodeException x) {
-            System.err.println(x.getResponse().getResponseHeaders());
-            System.err.println(x.getResponse().getContentAsString());
-            throw x;
-        }
+
+        HtmlPage page = wc.goTo("asynchPeople");
         assertEquals(0, wc.waitForBackgroundJavaScript(120000));
         boolean found = false;
         for (DomElement table : page.getElementsByTagName("table")) {

@@ -111,8 +111,8 @@ public class ConfirmationLinkTest {
     }
     
     private Page getPageAfterClick() throws Exception {
-        JenkinsRule.WebClient wc = j.createWebClient();
-        wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        JenkinsRule.WebClient wc = j.createWebClient()
+                .withThrowExceptionOnFailingStatusCode(false);
         HtmlPage p = wc.goTo("test");
     
         return HtmlElementUtil.click(getClickableLink(p));
@@ -124,8 +124,8 @@ public class ConfirmationLinkTest {
         testParams.paramClass = null;
         testParams.paramPost = null;
         
-        JenkinsRule.WebClient wc = j.createWebClient();
-        wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        JenkinsRule.WebClient wc = j.createWebClient()
+                .withThrowExceptionOnFailingStatusCode(false);
         HtmlPage p = wc.goTo("test");
         
         Page pageAfterClick = HtmlElementUtil.click(getClickableLink(p));
@@ -141,8 +141,8 @@ public class ConfirmationLinkTest {
         testParams.paramClass = null;
         testParams.paramPost = null;
         
-        JenkinsRule.WebClient wc = j.createWebClient();
-        wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        JenkinsRule.WebClient wc = j.createWebClient()
+                .withThrowExceptionOnFailingStatusCode(false);
         HtmlPage p = wc.goTo("test");
     
         Page pageAfterClick = HtmlElementUtil.click(getClickableLink(p));
@@ -157,8 +157,8 @@ public class ConfirmationLinkTest {
         testParams.paramClass = null;
         testParams.paramPost = postPayload;
         
-        JenkinsRule.WebClient wc = j.createWebClient();
-        wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        JenkinsRule.WebClient wc = j.createWebClient()
+                .withThrowExceptionOnFailingStatusCode(false);
         HtmlPage p = wc.goTo("test");
         
         Page pageAfterClick = HtmlElementUtil.click(getClickableLink(p));

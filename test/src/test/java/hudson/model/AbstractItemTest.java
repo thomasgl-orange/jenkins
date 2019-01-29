@@ -1,7 +1,7 @@
 package hudson.model;
 
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.HttpMethod;
+import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import hudson.security.ACL;
@@ -117,18 +117,17 @@ public class AbstractItemTest {
         WebRequest wr = new WebRequest(w.createCrumbedUrl(p.getUrl() + "confirmRename"), HttpMethod.POST);
         wr.setRequestParameters(Arrays.asList(new NameValuePair("newName", "bar")));
         w.login("alice", "alice");
-        assertThat(getPath(w.getPage(wr).getUrl()), equalTo(p.getUrl()));
+        Page page = w.getPage(wr);
+        assertThat(getPath(page.getUrl()), equalTo(p.getUrl()));
         assertThat(p.getName(), equalTo("bar"));
 
         wr = new WebRequest(w.createCrumbedUrl(p.getUrl() + "confirmRename"), HttpMethod.POST);
         wr.setRequestParameters(Arrays.asList(new NameValuePair("newName", "baz")));
         w.login("bob", "bob");
-        try {
-            assertThat(getPath(w.getPage(wr).getUrl()), equalTo(p.getUrl()));
-            fail("Expecting HTTP 403 Forbidden");
-        } catch (FailingHttpStatusCodeException e) {
-            assertThat(e.getStatusCode(), equalTo(403));
-        }
+
+        w.setThrowExceptionOnFailingStatusCode(false);
+        page = w.getPage(wr);
+        assertThat(page.getWebResponse().getStatusCode(), equalTo(403));
         assertThat(p.getName(), equalTo("bar"));
     }
 

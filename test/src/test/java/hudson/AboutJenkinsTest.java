@@ -55,8 +55,8 @@ public class AboutJenkinsTest {
                 .grant(Jenkins.READ).everywhere().to(USER)
         );
         
-        JenkinsRule.WebClient wc = j.createWebClient();
-        wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        JenkinsRule.WebClient wc = j.createWebClient()
+                .withThrowExceptionOnFailingStatusCode(false);
         
         { // user cannot see it
             wc.login(USER);
