@@ -194,7 +194,9 @@ public class PasswordTest {
         }
         VulnerableProperty.DescriptorImpl.incomingURL = null;
         String secret = "s3cr3t";
+        // the fireEvent is required as setText's new behavior is not triggering the onChange event anymore
         field.setText(secret);
+        field.fireEvent("change");
         while (VulnerableProperty.DescriptorImpl.incomingURL == null) {
             Thread.sleep(100); // form validation of edited value
         }
