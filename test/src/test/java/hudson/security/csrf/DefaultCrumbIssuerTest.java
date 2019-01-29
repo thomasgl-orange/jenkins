@@ -62,7 +62,7 @@ public class DefaultCrumbIssuerTest {
         wc.setThrowExceptionOnFailingStatusCode(false);
         // The crumb should no longer match if we remove the proxy info
         Page page = r.submit(p.getFormByName("config"));
-        assertEquals(403, page.getWebResponse().getStatusCode());
+        assertEquals(HttpURLConnection.HTTP_FORBIDDEN, page.getWebResponse().getStatusCode());
     }
 
     @Issue("JENKINS-3854")
@@ -140,11 +140,13 @@ public class DefaultCrumbIssuerTest {
                 .withThrowExceptionOnFailingStatusCode(false);
 
         Page page = wc.goTo("quietDown");
-        assertEquals("expect HTTP 405 method not allowed", 405, page.getWebResponse().getStatusCode());
+        assertEquals("expect HTTP 405 method not allowed", 
+                HttpURLConnection.HTTP_BAD_METHOD,
+                page.getWebResponse().getStatusCode());
 
         HtmlPage retry = (HtmlPage) wc.getCurrentWindow().getEnclosedPage();
         HtmlPage success = r.submit(retry.getFormByName("retry"));
-        assertEquals(200, success.getWebResponse().getStatusCode());
+        assertEquals(HttpURLConnection.HTTP_OK, success.getWebResponse().getStatusCode());
         assertTrue("quieting down", r.jenkins.isQuietingDown());
     }
 

@@ -25,16 +25,16 @@ package hudson.model;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.*;
 
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.xml.XmlPage;
 
 import java.io.File;
+import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 
 import jenkins.model.Jenkins;
 import hudson.slaves.DumbSlave;
@@ -86,7 +86,7 @@ public class ComputerTest {
         form.getInputByName("_.name").setValueAttribute("nodeA");
 
         Page page = j.submit(form);
-        assertThat(NOTE, page.getWebResponse().getStatusCode(), equalTo(400));
+        assertEquals(NOTE, HttpURLConnection.HTTP_BAD_REQUEST, page.getWebResponse().getStatusCode());
         assertThat(NOTE, page.getWebResponse().getContentAsString(), 
                 containsString("Agent called ‘nodeA’ already exists"));
     }
@@ -107,7 +107,7 @@ public class ComputerTest {
 
     private void verifyOfflineCause(Computer computer) throws Exception {
         XmlPage page = j.createWebClient().goToXml("computer/" + computer.getName() + "/config.xml");
-        String content = page.getWebResponse().getContentAsString("UTF-8");
+        String content = page.getWebResponse().getContentAsString(StandardCharsets.UTF_8);
         assertThat(content, containsString("temporaryOfflineCause"));
         assertThat(content, containsString("<userId>username</userId>"));
         assertThat(content, not(containsString("ApiTokenProperty")));

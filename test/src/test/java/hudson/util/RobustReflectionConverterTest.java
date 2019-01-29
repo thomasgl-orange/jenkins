@@ -39,6 +39,7 @@ import hudson.model.User;
 import hudson.security.ACL;
 
 import java.io.ByteArrayInputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
@@ -243,7 +244,9 @@ public class RobustReflectionConverterTest {
             req.setRequestBody(String.format(CONFIGURATION_TEMPLATE, AcceptOnlySpecificKeyword.ACCEPT_KEYWORD, "badvalue"));
             
             Page page = wc.getPage(req);
-            assertEquals("Submitting unacceptable configuration via REST should fail.", 500, page.getWebResponse().getStatusCode());
+            assertEquals("Submitting unacceptable configuration via REST should fail.", 
+                    HttpURLConnection.HTTP_INTERNAL_ERROR,
+                    page.getWebResponse().getStatusCode());
             
             // Configuration should not be updated for a failure of the critical field,
             assertNotEquals("badvalue", p.getProperty(KeywordProperty.class).getCriticalField().getKeyword());

@@ -24,7 +24,6 @@
 package hudson.model;
 
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebRequest;
@@ -407,17 +406,17 @@ public class AbstractProjectTest {
                 .withThrowExceptionOnFailingStatusCode(false);
 
         WebResponse rsp = wc.goTo(p.getUrl() + "build", null).getWebResponse();
-        assertEquals(201, rsp.getStatusCode());
+        assertEquals(HttpURLConnection.HTTP_CREATED, rsp.getStatusCode());
         assertNotNull(rsp.getResponseHeaderValue("Location"));
 
         WebResponse rsp2 = wc.goTo(p.getUrl() + "build", null).getWebResponse();
-        assertEquals(201, rsp2.getStatusCode());
+        assertEquals(HttpURLConnection.HTTP_CREATED, rsp2.getStatusCode());
         assertEquals(rsp.getResponseHeaderValue("Location"), rsp2.getResponseHeaderValue("Location"));
 
         p.makeDisabled(true);
 
         WebResponse rsp3 = wc.goTo(p.getUrl() + "build", null).getWebResponse();
-        assertEquals(409, rsp3.getStatusCode());
+        assertEquals(HttpURLConnection.HTTP_CONFLICT, rsp3.getStatusCode());
     }
 
     /**

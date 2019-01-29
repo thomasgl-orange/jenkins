@@ -3,6 +3,7 @@ package hudson;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.TextPage;
 
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 import jenkins.model.Jenkins;
@@ -12,6 +13,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.WebClient;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class TcpSlaveAgentListenerTest {
@@ -26,11 +28,11 @@ public class TcpSlaveAgentListenerTest {
 
         r.getInstance().setSlaveAgentPort(-1);
         Page p = wc.goTo("tcpSlaveAgentListener");
-        assertThat(p.getWebResponse().getStatusCode(), equalTo(404));
+        assertEquals(HttpURLConnection.HTTP_NOT_FOUND, p.getWebResponse().getStatusCode());
 
         r.getInstance().setSlaveAgentPort(0);
         p = wc.goTo("tcpSlaveAgentListener", "text/plain");
-        assertThat(p.getWebResponse().getStatusCode(), equalTo(200));
+        assertEquals(HttpURLConnection.HTTP_OK, p.getWebResponse().getStatusCode());
         assertThat(p.getWebResponse().getResponseHeaderValue("X-Instance-Identity"), notNullValue());
     }
 
@@ -46,6 +48,6 @@ public class TcpSlaveAgentListenerTest {
 
         wc.setThrowExceptionOnFailingStatusCode(false);
         Page page = wc.getPage(new URL("http://localhost:" + p + "/xxx"));
-        assertThat(page.getWebResponse().getStatusCode(), equalTo(404));
+        assertEquals(HttpURLConnection.HTTP_NOT_FOUND, page.getWebResponse().getStatusCode());
     }
 }

@@ -32,7 +32,6 @@ import jenkins.model.Jenkins;
 import org.jenkins.ui.icon.Icon;
 import org.jenkins.ui.icon.IconSet;
 import org.jvnet.hudson.test.Issue;
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
@@ -57,6 +56,7 @@ import hudson.util.FormValidation;
 import hudson.util.HudsonIsLoading;
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -131,7 +131,9 @@ public class ViewTest {
         wc.setThrowExceptionOnFailingStatusCode(false);
         // do it again and verify an error
         Page page = j.submit(form);
-        assertEquals("shouldn't be allowed to create two views of the same name.", 400, page.getWebResponse().getStatusCode());
+        assertEquals("shouldn't be allowed to create two views of the same name.", 
+                HttpURLConnection.HTTP_BAD_REQUEST, 
+                page.getWebResponse().getStatusCode());
     }
 
     @Test public void privateView() throws Exception {
@@ -210,6 +212,7 @@ public class ViewTest {
         
         WebClient webClient = j.createWebClient()
                 .withThrowExceptionOnFailingStatusCode(false);
+        webClient.getOptions().setJavaScriptEnabled(false);
         j.assertAllImageLoadSuccessfully(webClient.goTo("asynchPeople"));
     }
 
@@ -222,7 +225,9 @@ public class ViewTest {
         form.getRadioButtonsByName("mode").get(0).setChecked(true);
 
         HtmlPage page = j.submit(form);
-        assertThat("\"..\" should not be allowed.", page.getWebResponse().getStatusCode(), equalTo(400));
+        assertEquals("\"..\" should not be allowed.",
+                HttpURLConnection.HTTP_BAD_REQUEST, 
+                page.getWebResponse().getStatusCode());
     }
 
     @Ignore("verified manually in Winstone but org.mortbay.JettyResponse.sendRedirect (6.1.26) seems to mangle the location")
@@ -243,7 +248,7 @@ public class ViewTest {
         ListView view = listView("v");
         view.description = "one";
         WebClient wc = j.createWebClient();
-        String xml = wc.goToXml("view/v/config.xml").getContent();
+        String xml = wc.goToXml("view/v/config.xml").getWebResponse().getContentAsString();
         assertTrue(xml, xml.contains("<description>one</description>"));
         xml = xml.replace("<description>one</description>", "<description>two</description>");
         WebRequest req = new WebRequest(wc.createCrumbedUrl("view/v/config.xml"), HttpMethod.POST);

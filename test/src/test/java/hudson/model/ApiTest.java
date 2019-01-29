@@ -89,7 +89,7 @@ public class ApiTest {
 
         // could expect application/xml but as an error occurred it's a text/html that is returned
         Page page = wc.goTo("api/xml?xpath=document(\"" + f.getAbsolutePath() + "\")", null);
-        assertThat(page.getWebResponse().getStatusCode(), equalTo(500));
+        assertEquals(HttpURLConnection.HTTP_INTERNAL_ERROR, page.getWebResponse().getStatusCode());
         assertThat(page.getWebResponse().getContentAsString(), containsString("Illegal function: document"));
     }
 

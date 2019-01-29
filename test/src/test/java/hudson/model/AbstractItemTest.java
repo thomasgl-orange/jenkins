@@ -9,6 +9,7 @@ import hudson.security.ACLContext;
 import hudson.security.AccessDeniedException2;
 import hudson.util.FormValidation;
 import java.io.File;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import jenkins.model.Jenkins;
@@ -127,7 +128,7 @@ public class AbstractItemTest {
 
         w.setThrowExceptionOnFailingStatusCode(false);
         page = w.getPage(wr);
-        assertThat(page.getWebResponse().getStatusCode(), equalTo(403));
+        assertEquals(HttpURLConnection.HTTP_FORBIDDEN, page.getWebResponse().getStatusCode());
         assertThat(p.getName(), equalTo("bar"));
     }
 

@@ -23,7 +23,6 @@
  */
 package hudson.jobs;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.*;
 
@@ -32,6 +31,8 @@ import hudson.model.Failure;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.listeners.ItemListener;
+
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.MessageFormat;
 
@@ -76,11 +77,13 @@ public class CreateItemTest {
 
         WebRequest request = new WebRequest(apiURL, HttpMethod.POST);
         deleteContentTypeHeader(request);
-        
+
         Page p = rule.createWebClient()
                 .withThrowExceptionOnFailingStatusCode(false)
                 .getPage(request);
-        assertThat("Creating job from copy should succeed.", p.getWebResponse().getStatusCode(), equalTo(200));
+        assertEquals("Creating job from copy should succeed.",
+                HttpURLConnection.HTTP_OK,
+                p.getWebResponse().getStatusCode());
     }
 
     @Issue("JENKINS-34691")
@@ -98,12 +101,14 @@ public class CreateItemTest {
 
         WebRequest request = new WebRequest(apiURL, HttpMethod.POST);
         deleteContentTypeHeader(request);
-    
+
         Page p = rule.createWebClient()
                 .withThrowExceptionOnFailingStatusCode(false)
                 .getPage(request);
-        
-        assertThat("Creating job from copy should fail.", p.getWebResponse().getStatusCode(), equalTo(400));
+
+        assertEquals("Creating job from copy should fail.", 
+                HttpURLConnection.HTTP_BAD_REQUEST, 
+                p.getWebResponse().getStatusCode());
         assertThat(rule.jenkins.getItem("newJob"), nullValue());
     }
 

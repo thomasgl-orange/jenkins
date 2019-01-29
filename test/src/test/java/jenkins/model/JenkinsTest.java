@@ -346,11 +346,15 @@ public class JenkinsTest {
 
         wc.withBasicApiToken(User.getById("bob", true));
         Page page = eval(wc);
-        assertEquals("bob has only READ", HttpURLConnection.HTTP_FORBIDDEN, page.getWebResponse().getStatusCode());
+        assertEquals("bob has only READ", 
+                HttpURLConnection.HTTP_FORBIDDEN, 
+                page.getWebResponse().getStatusCode());
 
         wc.withBasicApiToken(User.getById("charlie", true));
         page = eval(wc);
-        assertEquals("charlie has ADMINISTER but not RUN_SCRIPTS", HttpURLConnection.HTTP_FORBIDDEN, page.getWebResponse().getStatusCode());
+        assertEquals("charlie has ADMINISTER but not RUN_SCRIPTS", 
+                HttpURLConnection.HTTP_FORBIDDEN,
+                page.getWebResponse().getStatusCode());
     }
     private Page eval(WebClient wc) throws Exception {
         WebRequest req = new WebRequest(new URL(wc.getContextPath() + "eval"), HttpMethod.POST);
@@ -404,13 +408,13 @@ public class JenkinsTest {
         j.jenkins.setAuthorizationStrategy(auth);
 
         // no anonymous read access
-        assertTrue(!Jenkins.getInstance().hasPermission(Jenkins.ANONYMOUS,Jenkins.READ));
+        assertTrue(!Jenkins.get().hasPermission(Jenkins.ANONYMOUS, Jenkins.READ));
 
         WebClient wc = j.createWebClient()
                 .withThrowExceptionOnFailingStatusCode(false);
         HtmlPage p = wc.goTo("error/reportError");
 
-        assertEquals(p.asText(), 400, p.getWebResponse().getStatusCode());  // not 403 forbidden
+        assertEquals(p.asText(), HttpURLConnection.HTTP_BAD_REQUEST, p.getWebResponse().getStatusCode());  // not 403 forbidden
         assertTrue(p.getWebResponse().getContentAsString().contains("My car is black"));
     }
 

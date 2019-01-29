@@ -33,6 +33,7 @@ import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestPluginManager;
 
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
@@ -62,7 +63,7 @@ public class Security914Test {
         request.setAdditionalHeader("Accept-Language", "../../../../jenkinsTests.tmp/" + j.jenkins.getRootDir().getName() + "/config");
         
         Page p = wc.getPage(request);
-        assertEquals(p.getWebResponse().getStatusCode(), 404);
+        assertEquals(HttpURLConnection.HTTP_NOT_FOUND, p.getWebResponse().getStatusCode());
         assertNotEquals(p.getWebResponse().getContentType(), "application/xml");
     }
     
@@ -82,7 +83,7 @@ public class Security914Test {
         request.setAdditionalHeader("Accept-Language", "../../../../../../../../../../../../windows/win");
         
         Page p = wc.getPage(request);
-        assertEquals(p.getWebResponse().getStatusCode(), 404);
+        assertEquals(HttpURLConnection.HTTP_NOT_FOUND, p.getWebResponse().getStatusCode());
         assertEquals(p.getWebResponse().getContentType(), "text/html");
     }
 }

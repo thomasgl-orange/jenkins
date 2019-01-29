@@ -66,7 +66,6 @@ import org.jvnet.hudson.test.SleepBuilder;
 import org.jvnet.hudson.test.recipes.LocalData;
 
 import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeFalse;
 
@@ -225,15 +224,15 @@ public class JobTest {
             
             // Has CONFIGURE and EXTENDED_READ permission
             wc.withBasicApiToken(User.getById("alice", true));  
-            tryConfigDotXml(wc, 500, "Both perms; should get 500");
+            tryConfigDotXml(wc, HttpURLConnection.HTTP_INTERNAL_ERROR, "Both perms; should get 500");
 
             // Has only CONFIGURE permission (this should imply EXTENDED_READ)
             wc.withBasicApiToken(User.getById("bob", true));  
-            tryConfigDotXml(wc, 500, "Config perm should imply EXTENDED_READ");
+            tryConfigDotXml(wc, HttpURLConnection.HTTP_INTERNAL_ERROR, "Config perm should imply EXTENDED_READ");
 
             // Has only EXTENDED_READ permission
             wc.withBasicApiToken(User.getById("charlie", true));  
-            tryConfigDotXml(wc, 403, "No permission, should get 403");
+            tryConfigDotXml(wc, HttpURLConnection.HTTP_FORBIDDEN, "No permission, should get 403");
         } finally {
             Item.EXTENDED_READ.setEnabled(saveEnabled);
         }
@@ -242,7 +241,7 @@ public class JobTest {
     private static void tryConfigDotXml(JenkinsRule.WebClient wc, int status, String msg) throws Exception {
         // Verify we can GET the config.xml:
         Page p = wc.goTo("job/testJob/config.xml", "application/xml");
-        assertEquals("Retrieving config.xml should be ok", 200, p.getWebResponse().getStatusCode());
+        assertEquals("Retrieving config.xml should be ok", HttpURLConnection.HTTP_OK, p.getWebResponse().getStatusCode());
         
         // This page is a simple form to POST to /job/testJob/config.xml
         // But it posts invalid data so we expect 500 if we have permission, 403 if not
@@ -251,7 +250,7 @@ public class JobTest {
         assertEquals(msg, status, p.getWebResponse().getStatusCode());
         
         p = wc.goTo("logout");
-        assertEquals("To logout should be ok", 200, p.getWebResponse().getStatusCode());
+        assertEquals("To logout should be ok", HttpURLConnection.HTTP_OK, p.getWebResponse().getStatusCode());
     }
 
     @LocalData @Issue("JENKINS-6371")

@@ -1,8 +1,7 @@
 package hudson.diagnosis;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -24,6 +23,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collections;
 
@@ -87,17 +87,17 @@ public class HudsonHomeDiskUsageMonitorTest {
 
         wc.withBasicApiToken(bob);
         Page p = wc.getPage(request);
-        assertThat(p.getWebResponse().getStatusCode(), equalTo(403));
-        
+        assertEquals(HttpURLConnection.HTTP_FORBIDDEN, p.getWebResponse().getStatusCode());
+
         assertTrue(mon.isEnabled());
 
         WebRequest requestReadOnly = new WebRequest(new URL(wc.getContextPath() + "administrativeMonitor/hudsonHomeIsFull"), HttpMethod.GET);
         p = wc.getPage(requestReadOnly);
-        assertThat(p.getWebResponse().getStatusCode(), equalTo(403));
+        assertEquals(HttpURLConnection.HTTP_FORBIDDEN, p.getWebResponse().getStatusCode());
 
         wc.withBasicApiToken(administrator);
         p = wc.getPage(request);
-        assertThat(p.getWebResponse().getStatusCode(), equalTo(200));
+        assertEquals(HttpURLConnection.HTTP_OK, p.getWebResponse().getStatusCode());
         assertFalse(mon.isEnabled());
     }
 

@@ -33,6 +33,7 @@ import hudson.model.FreeStyleProject;
 import hudson.model.ListView;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 import java.util.ArrayList;
@@ -74,7 +75,7 @@ public class SearchTest {
         WebClient wc = j.createWebClient()
                 .withThrowExceptionOnFailingStatusCode(false);
         HtmlPage resultPage = wc.search("no-such-thing");
-        assertEquals(404, resultPage.getWebResponse().getStatusCode());
+        assertEquals(HttpURLConnection.HTTP_NOT_FOUND, resultPage.getWebResponse().getStatusCode());
     }
 
     /**
@@ -89,7 +90,7 @@ public class SearchTest {
             throw new AssertionError();
         });
         HtmlPage resultPage = wc.search("<script>alert('script');</script>");
-        assertEquals(404, resultPage.getWebResponse().getStatusCode());
+        assertEquals(HttpURLConnection.HTTP_NOT_FOUND, resultPage.getWebResponse().getStatusCode());
     }
     
     @Test
