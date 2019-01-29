@@ -27,11 +27,10 @@ public class TcpSlaveAgentListenerTest {
                 .withThrowExceptionOnFailingStatusCode(false);
 
         r.getInstance().setSlaveAgentPort(-1);
-        Page p = wc.goTo("tcpSlaveAgentListener");
-        assertEquals(HttpURLConnection.HTTP_NOT_FOUND, p.getWebResponse().getStatusCode());
+        wc.assertFails("tcpSlaveAgentListener", HttpURLConnection.HTTP_NOT_FOUND);
 
         r.getInstance().setSlaveAgentPort(0);
-        p = wc.goTo("tcpSlaveAgentListener", "text/plain");
+        Page p = wc.goTo("tcpSlaveAgentListener", "text/plain");
         assertEquals(HttpURLConnection.HTTP_OK, p.getWebResponse().getStatusCode());
         assertThat(p.getWebResponse().getResponseHeaderValue("X-Instance-Identity"), notNullValue());
     }
