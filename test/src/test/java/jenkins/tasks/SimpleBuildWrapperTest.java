@@ -38,6 +38,7 @@ import hudson.model.Descriptor;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.JDK;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.Slave;
 import hudson.model.TaskListener;
@@ -61,6 +62,7 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.jvnet.hudson.test.BuildWatcher;
 import org.jvnet.hudson.test.CaptureEnvironmentBuilder;
+import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
@@ -160,7 +162,35 @@ public class SimpleBuildWrapperTest {
                 listener.getLogger().println("ran DisposerImpl");
             }
         }
-        @TestExtension("disposer") public static class DescriptorImpl extends BuildWrapperDescriptor {
+        @TestExtension({ "disposer", "failedJobWithInterruptedDisposer" }) public static class DescriptorImpl extends BuildWrapperDescriptor {
+            @Override public boolean isApplicable(AbstractProject<?,?> item) {
+                return true;
+            }
+        }
+    }
+
+    @Test public void failedJobWithInterruptedDisposer() throws Exception {
+        FreeStyleProject p = r.createFreeStyleProject();
+        p.getBuildersList().add(new FailureBuilder());
+        p.getBuildWrappersList().add(new WrapperWithDisposer());
+        p.getBuildWrappersList().add(new InterruptedDisposerWrapper());
+        // build is ABORTED because of InterruptedException during tearDown (trumps the FAILURE result)
+        FreeStyleBuild b = r.assertBuildStatus(Result.ABORTED, p.scheduleBuild2(0));
+        r.assertLogContains("tearDown InterruptedDisposerImpl", b);
+        r.assertLogContains("ran DisposerImpl", b); // ran despite earlier InterruptedException
+    }
+    public static class InterruptedDisposerWrapper extends SimpleBuildWrapper {
+        @Override public void setUp(Context context, Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener, EnvVars initialEnvironment) throws IOException, InterruptedException {
+            context.setDisposer(new InterruptedDisposerImpl());
+        }
+        private static final class InterruptedDisposerImpl extends Disposer {
+            private static final long serialVersionUID = 1;
+            @Override public void tearDown(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws IOException, InterruptedException {
+                listener.getLogger().println("tearDown InterruptedDisposerImpl");
+                throw new InterruptedException("interrupted in InterruptedDisposerImpl");
+            }
+        }
+        @TestExtension("failedJobWithInterruptedDisposer") public static class DescriptorImpl extends BuildWrapperDescriptor {
             @Override public boolean isApplicable(AbstractProject<?,?> item) {
                 return true;
             }
