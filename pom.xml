@@ -28,13 +28,13 @@ THE SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci</groupId>
     <artifactId>jenkins</artifactId>
-    <version>1.54</version>
+    <version>1.55</version>
     <relativePath />
   </parent>
 
   <groupId>org.jenkins-ci.main</groupId>
   <artifactId>jenkins-parent</artifactId>
-  <version>2.232</version>
+  <version>2.234</version>
   <packaging>pom</packaging>
 
   <name>Jenkins main module</name>
@@ -60,7 +60,7 @@ THE SOFTWARE.
     <connection>scm:git:git://github.com/jenkinsci/jenkins.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/jenkinsci/jenkins.git</developerConnection>
     <url>https://github.com/jenkinsci/jenkins</url>
-    <tag>jenkins-2.232</tag>
+    <tag>jenkins-2.234</tag>
   </scm>
 
   <distributionManagement>
@@ -76,7 +76,7 @@ THE SOFTWARE.
   </issueManagement>
 
   <properties>
-    <revision>2.232</revision>
+    <revision>2.234</revision>
     <changelist>-SNAPSHOT</changelist>
 
     <!-- *.html files are in UTF-8, and *.properties are in iso-8859-1, so this configuration is actually incorrect,
@@ -411,13 +411,6 @@ THE SOFTWARE.
           <groupId>com.github.spotbugs</groupId>
           <artifactId>spotbugs-maven-plugin</artifactId>
           <configuration>
-            <plugins>
-              <plugin>
-                <groupId>com.h3xstream.findsecbugs</groupId>
-                <artifactId>findsecbugs-plugin</artifactId>
-                <version>1.10.1</version>
-              </plugin>
-            </plugins>
             <maxHeap>768</maxHeap>
           </configuration>
         </plugin>
