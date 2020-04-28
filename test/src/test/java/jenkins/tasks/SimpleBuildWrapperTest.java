@@ -242,6 +242,7 @@ public class SimpleBuildWrapperTest {
         FreeStyleBuild b = r.assertBuildStatus(Result.ABORTED, p.scheduleBuild2(0));
         r.assertLogContains("tearDown InterruptedDisposerImpl", b);
         r.assertLogContains("ran DisposerImpl", b); // ran despite earlier InterruptedException
+        r.assertLogContains("build result was: FAILURE", b); // the original FAILURE result was logged
     }
     public static class InterruptedDisposerWrapper extends SimpleBuildWrapper {
         @Override public void setUp(Context context, Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener, EnvVars initialEnvironment) throws IOException, InterruptedException {

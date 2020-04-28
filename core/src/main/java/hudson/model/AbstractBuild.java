@@ -515,7 +515,14 @@ public abstract class AbstractBuild<P extends AbstractProject<P,R>,R extends Abs
             } finally {
                 if (!tearDownMarker.tornDown) {
                     // looks like environments are not torn down yet, do it now (might affect the build result)
-                    result = Result.combine(result, tearDownBuildEnvironments(listener));
+                    try {
+                        result = Result.combine(result, tearDownBuildEnvironments(listener));
+                    } catch (InterruptedException ie) {
+                        // we're about to discard the actual build result, say something about it
+                        listener.getLogger().println("Interrupted while tearing down environments, build result was: "
+                                + buildResult(result));
+                        throw ie;
+                    }
                 }
             }
 
@@ -526,6 +533,10 @@ public abstract class AbstractBuild<P extends AbstractProject<P,R>,R extends Abs
                 launcher.kill(getCharacteristicEnvVars());
             }
 
+            return buildResult(result);
+        }
+
+        private @NonNull Result buildResult(@CheckForNull Result result) {
             // this is ugly, but for historical reason, if non-null value is returned
             // it should become the final result.
             if (result==null)    result = getResult();
